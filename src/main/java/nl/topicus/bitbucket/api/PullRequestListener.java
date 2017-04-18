@@ -10,10 +10,7 @@ import com.atlassian.bitbucket.server.ApplicationPropertiesService;
 import com.atlassian.event.api.EventListener;
 import com.atlassian.event.api.EventPublisher;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
-import nl.topicus.bitbucket.events.BitbucketPushEvent;
-import nl.topicus.bitbucket.events.BitbucketServerPullRequestEvent;
-import nl.topicus.bitbucket.events.EventType;
-import nl.topicus.bitbucket.events.Events;
+import nl.topicus.bitbucket.events.*;
 import nl.topicus.bitbucket.persistence.WebHookConfiguration;
 import nl.topicus.bitbucket.persistence.WebHookConfigurationDao;
 import org.apache.http.Header;
@@ -31,9 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 @Component
 public class PullRequestListener implements DisposableBean
@@ -100,6 +94,13 @@ public class PullRequestListener implements DisposableBean
     }
 
     @EventListener
+    public void commentEvent(PullRequestCommentEvent event) throws IOException
+    {
+        sendPullRequestCommentEvent(event, EventType.PULL_REQUEST_COMMENT);
+    }
+
+
+    @EventListener
     public void mergedEvent(PullRequestMergedEvent event) throws IOException
     {
         sendPullRequestEvent(event, EventType.PULL_REQUEST_MERGED);
@@ -116,6 +117,16 @@ public class PullRequestListener implements DisposableBean
     {
         BitbucketPushEvent pushEvent = Events.createPushEvent(event, applicationPropertiesService);
         sendEvents(pushEvent, event.getRepository(), EventType.REPO_PUSH);
+    }
+
+    private void sendPullRequestCommentEvent(PullRequestCommentEvent event, EventType eventType) throws IOException
+    {
+        BitbucketServerPullRequestCommentEvent commentEvent = Events.createPullRequestCommmentEvent(event,
+            applicationPropertiesService);
+        Repository repository = event.getPullRequest().getToRef().getRepository();
+        String prUrl = navBuilder.repo(repository).pullRequest(event.getPullRequest().getId()).buildAbsolute();
+        commentEvent.getPullrequest().setLink(prUrl);
+        sendEvents(commentEvent, repository, eventType);
     }
 
     private void sendPullRequestEvent(PullRequestEvent event, EventType eventType) throws IOException
