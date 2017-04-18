@@ -1,5 +1,6 @@
 package nl.topicus.bitbucket.events;
 
+import com.atlassian.bitbucket.event.pull.PullRequestCommentEvent;
 import com.atlassian.bitbucket.event.pull.PullRequestEvent;
 import com.atlassian.bitbucket.event.repository.RepositoryRefsChangedEvent;
 import com.atlassian.bitbucket.repository.RefChange;
@@ -41,5 +42,15 @@ public final class Events
         pullRequestEvent.setRepository(Models.createRepository(event.getPullRequest().getToRef().getRepository(),
                                                                appPropSvc));
         return pullRequestEvent;
+    }
+
+    public static BitbucketServerPullRequestCommentEvent createPullRequestCommmentEvent(PullRequestCommentEvent event,
+                                                                                   ApplicationPropertiesService appPropSvc)
+    {
+        BitbucketServerPullRequestCommentEvent commentEvent = new BitbucketServerPullRequestCommentEvent();
+        commentEvent.setPullrequest(Models.createPullrequest(event.getPullRequest(), appPropSvc));
+        commentEvent.setRepository(Models.createRepository(event.getPullRequest().getToRef().getRepository(), appPropSvc));
+        commentEvent.setComment((event.getComment().getText()));
+        return commentEvent;
     }
 }

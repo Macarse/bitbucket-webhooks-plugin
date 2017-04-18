@@ -13,10 +13,11 @@ public enum EventType {
     PULL_REQUEST_REOPENED("pullrequest:updated", COLUMN_PR_REOPENED),
     PULL_REQUEST_MERGED("pullrequest:fulfilled", COLUMN_PR_MERGED),
     PULL_REQUEST_DECLINED("pullrequest:rejected", COLUMN_PR_DECLINED),
+    PULL_REQUEST_COMMENT("pullrequest:comment", COLUMN_PR_COMMENTED),
     REPO_PUSH("repo:push", COLUMN_REPO_PUSH),
     TAG_CREATED("repo:push", COLUMN_TAG_CREATED),
     BRANCH_CREATED("repo:push", COLUMN_BRANCH_CREATED),
-    BRANCH_DELETED("repo:push", COLUMN_BRANCH_DELETED),;
+    BRANCH_DELETED("repo:push", COLUMN_BRANCH_DELETED);
 
     private final String headerValue;
     private final String queryColumn;

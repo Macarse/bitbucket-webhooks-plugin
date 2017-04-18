@@ -230,6 +230,14 @@
                    'isChecked': $configuration ? $configuration.prRescoped : false
                  ]] /}
                 {/call}
+                {call aui.form.checkboxField}
+                 {param legendContent: '' /}
+                 {param fields: [[
+                   'id': 'isPrCommented',
+                   'labelText': 'Pull request commented',
+                   'isChecked': $configuration ? $configuration.PrCommented : false
+                 ]] /}
+                {/call}
              {/param}
            {/call}
            {call aui.group.group}

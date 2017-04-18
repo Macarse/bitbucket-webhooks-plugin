@@ -19,10 +19,7 @@ import com.atlassian.bitbucket.util.Version;
 import com.atlassian.event.api.EventListener;
 import com.atlassian.event.api.EventPublisher;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
-import nl.topicus.bitbucket.events.BitbucketPushEvent;
-import nl.topicus.bitbucket.events.BitbucketServerPullRequestEvent;
-import nl.topicus.bitbucket.events.EventType;
-import nl.topicus.bitbucket.events.Events;
+import nl.topicus.bitbucket.events.*;
 import nl.topicus.bitbucket.persistence.WebHookConfiguration;
 import nl.topicus.bitbucket.persistence.WebHookConfigurationDao;
 import org.apache.http.Header;
@@ -139,6 +136,13 @@ public class PullRequestListener implements DisposableBean, InitializingBean
     }
 
     @EventListener
+    public void commentEvent(PullRequestCommentEvent event) throws IOException
+    {
+        sendPullRequestCommentEvent(event, EventType.PULL_REQUEST_COMMENT);
+    }
+
+
+    @EventListener
     public void onPullRequestMerged(PullRequestMergedEvent event)
     {
         // Note that onRepositoryRefsChanged is _also_ called for this same event. It triggers a different
@@ -181,6 +185,16 @@ public class PullRequestListener implements DisposableBean, InitializingBean
             BitbucketPushEvent pushEvent = Events.createPushEvent(event, applicationPropertiesService);
             sendEvents(pushEvent, event.getRepository(), chooseRefsChangedEvent(event));
         });
+    }
+
+    private void sendPullRequestCommentEvent(PullRequestCommentEvent event, EventType eventType) throws IOException
+    {
+        BitbucketServerPullRequestCommentEvent commentEvent = Events.createPullRequestCommmentEvent(event,
+            applicationPropertiesService);
+        Repository repository = event.getPullRequest().getToRef().getRepository();
+        String prUrl = navBuilder.repo(repository).pullRequest(event.getPullRequest().getId()).buildAbsolute();
+        commentEvent.getPullrequest().setLink(prUrl);
+        sendEvents(commentEvent, repository, eventType);
     }
 
     private static EventType chooseRefsChangedEvent(RepositoryRefsChangedEvent event)

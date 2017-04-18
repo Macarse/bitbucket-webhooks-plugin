@@ -20,6 +20,7 @@ public interface WebHookConfiguration extends Entity
 	String COLUMN_PR_RESCOPED = "PR_RESCOPED";
 	String COLUMN_PR_REOPENED = "PR_REOPENED";
 	String COLUMN_PR_UPDATED = "PR_UPDATED";
+	String COLUMN_PR_COMMENTED = "PR_COMMENTED";
 	String COLUMN_REPO_PUSH = "REPO_PUSH";
 	String COLUMN_TAG_CREATED = "TAG_CREATED";
 	String COLUMN_TITLE = "TITLE";
@@ -108,6 +109,14 @@ public interface WebHookConfiguration extends Entity
 
 	@Mutator(COLUMN_PR_DECLINED)
 	void setPrDeclined(boolean isPrDeclined);
+
+	@NotNull
+	@Default("true")
+	@Accessor(COLUMN_PR_COMMENTED)
+	boolean isPrCommented();
+
+	@Mutator(COLUMN_PR_COMMENTED)
+	void setPrCommented(boolean PrCommented);
 
 	@NotNull
 	@Default("true")
