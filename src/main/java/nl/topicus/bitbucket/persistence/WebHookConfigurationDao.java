@@ -50,7 +50,7 @@ public class WebHookConfigurationDao {
         return createOrUpdateWebHookConfiguration(rep, id, title, url, committersToIgnore, enabled,
                 false, true, true, true, true,
                 true, true, true, true, true,
-                true
+                true, true
         );
     }
 
@@ -58,7 +58,7 @@ public class WebHookConfigurationDao {
                                                                    boolean enabled, boolean isTagCreated, boolean isBranchDeleted,
                                                                    boolean isBranchCreated, boolean isRepoPush, boolean isPrDeclined,
                                                                    boolean isPrRescoped, boolean isPrMerged, boolean isPrReopened,
-                                                                   boolean isPrUpdated, boolean isPrCreated, boolean isPrCommented) {
+                                                                   boolean isPrUpdated, boolean isPrCreated, boolean isPrCommented, boolean isBuildStatus) {
         WebHookConfiguration webHookConfiguration = id == null ? null : getWebHookConfiguration(id);
         if (webHookConfiguration == null || !webHookConfiguration.getRepositoryId().equals(rep.getId())) {
             webHookConfiguration = activeObjects.create(WebHookConfiguration.class, ImmutableMap.<String, Object>builder()
@@ -78,6 +78,7 @@ public class WebHookConfigurationDao {
                     .put(COLUMN_TITLE, title)
                     .put(COLUMN_URL, url)
                     .put(COLUMN_IGNORED_COMMITERS, committersToIgnore)
+                    .put(COLUMN_BUILD_STATUS, isBuildStatus)
                     .build());
         } else {
             webHookConfiguration.setBranchCreated(isBranchCreated);
@@ -95,6 +96,7 @@ public class WebHookConfigurationDao {
             webHookConfiguration.setTitle(title);
             webHookConfiguration.setURL(url);
             webHookConfiguration.setCommittersToIgnore(committersToIgnore);
+            webHookConfiguration.setBuildStatus(isBuildStatus);
             webHookConfiguration.save();
         }
 

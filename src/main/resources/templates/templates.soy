@@ -176,6 +176,14 @@
                    'isChecked': $configuration ? $configuration.tagCreated : false
                  ]] /}
                 {/call}
+                {call aui.form.checkboxField}
+                 {param legendContent: '' /}
+                 {param fields: [[
+                   'id': 'isBuildStatus',
+                   'labelText': 'Build Status',
+                   'isChecked': $configuration ? $configuration.buildStatus : false
+                 ]] /}
+                {/call}
 
              {/param}
            {/call}
@@ -235,7 +243,7 @@
                  {param fields: [[
                    'id': 'isPrCommented',
                    'labelText': 'Pull request commented',
-                   'isChecked': $configuration ? $configuration.PrCommented : false
+                   'isChecked': $configuration ? $configuration.prCommented : false
                  ]] /}
                 {/call}
              {/param}

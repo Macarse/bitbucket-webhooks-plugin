@@ -26,6 +26,7 @@ public interface WebHookConfiguration extends Entity
 	String COLUMN_TITLE = "TITLE";
 	String COLUMN_URL = "URL";
 	String COLUMN_IGNORED_COMMITERS = "COMMITTERS_TO_IGNORE";
+	String COLUMN_BUILD_STATUS = "BUILD_STATUS";
 
 	@Accessor(COLUMN_TITLE)
 	@NotNull
@@ -149,4 +150,12 @@ public interface WebHookConfiguration extends Entity
 
 	@Mutator(COLUMN_TAG_CREATED)
 	void setTagCreated(boolean isTagCreated);
+
+	@NotNull
+	@Default("true")
+	@Accessor(COLUMN_BUILD_STATUS)
+	boolean isBuildStatus();
+
+	@Mutator(COLUMN_BUILD_STATUS)
+	void setBuildStatus(boolean isBuildStatus);
 }

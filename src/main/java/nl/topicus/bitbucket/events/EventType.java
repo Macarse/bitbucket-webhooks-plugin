@@ -14,6 +14,7 @@ public enum EventType {
     PULL_REQUEST_MERGED("pullrequest:fulfilled", COLUMN_PR_MERGED),
     PULL_REQUEST_DECLINED("pullrequest:rejected", COLUMN_PR_DECLINED),
     PULL_REQUEST_COMMENT("pullrequest:comment", COLUMN_PR_COMMENTED),
+    BUILD_STATUS("build:status", COLUMN_BUILD_STATUS),
     REPO_PUSH("repo:push", COLUMN_REPO_PUSH),
     TAG_CREATED("repo:push", COLUMN_TAG_CREATED),
     BRANCH_CREATED("repo:push", COLUMN_BRANCH_CREATED),
