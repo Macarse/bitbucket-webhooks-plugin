@@ -181,8 +181,8 @@ public class DummyWebHookConfiguration implements WebHookConfiguration
 	}
 
 	@Override
-	public void setPrCommented(boolean PrCommented) {
-		isPrCommented = PrCommented;
+	public void setPrCommented(boolean prCommented) {
+		isPrCommented = prCommented;
 	}
 
 	@Override

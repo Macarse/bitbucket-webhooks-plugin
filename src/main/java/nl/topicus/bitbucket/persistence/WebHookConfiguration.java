@@ -117,7 +117,7 @@ public interface WebHookConfiguration extends Entity
 	boolean isPrCommented();
 
 	@Mutator(COLUMN_PR_COMMENTED)
-	void setPrCommented(boolean PrCommented);
+	void setPrCommented(boolean prCommented);
 
 	@NotNull
 	@Default("true")
