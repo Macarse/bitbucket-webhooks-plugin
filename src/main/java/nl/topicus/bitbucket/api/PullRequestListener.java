@@ -145,7 +145,7 @@ public class PullRequestListener implements DisposableBean, InitializingBean
     }
 
     @EventListener
-    public void commentEvent(PullRequestCommentEvent event) throws IOException
+    public void onPullRequestCommentEvent(PullRequestCommentEvent event) throws IOException
     {
         sendPullRequestEvent(event, EventType.PULL_REQUEST_COMMENT);
     }
