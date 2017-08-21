@@ -4,24 +4,21 @@ import com.atlassian.bitbucket.ServiceException;
 import com.atlassian.bitbucket.event.branch.BranchCreatedEvent;
 import com.atlassian.bitbucket.event.branch.BranchDeletedEvent;
 import com.atlassian.bitbucket.build.BuildStatusSetEvent;
-import com.atlassian.bitbucket.commit.Commit;
 import com.atlassian.bitbucket.event.pull.*;
 import com.atlassian.bitbucket.event.repository.RepositoryDeletionRequestedEvent;
 import com.atlassian.bitbucket.event.repository.RepositoryRefsChangedEvent;
 import com.atlassian.bitbucket.event.tag.TagCreatedEvent;
+import com.atlassian.bitbucket.idx.CommitIndex;
+import com.atlassian.bitbucket.idx.IndexedCommit;
 import com.atlassian.bitbucket.nav.NavBuilder;
 import com.atlassian.bitbucket.pull.PullRequest;
-import com.atlassian.bitbucket.pull.PullRequestSearchRequest;
 import com.atlassian.bitbucket.pull.PullRequestService;
-import com.atlassian.bitbucket.pull.PullRequestState;
 import com.atlassian.bitbucket.repository.Repository;
 import com.atlassian.bitbucket.scm.Command;
 import com.atlassian.bitbucket.scm.ScmService;
 import com.atlassian.bitbucket.scm.pull.ScmPullRequestCommandFactory;
 import com.atlassian.bitbucket.server.ApplicationPropertiesService;
 import com.atlassian.bitbucket.util.Version;
-import com.atlassian.bitbucket.util.Page;
-import com.atlassian.bitbucket.util.PageRequestImpl;
 import com.atlassian.event.api.EventListener;
 import com.atlassian.event.api.EventPublisher;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
@@ -59,7 +56,7 @@ public class PullRequestListener implements DisposableBean, InitializingBean
     private final CloseableHttpClient httpClient;
     private final NavBuilder navBuilder;
     private final ScmService scmService;
-    private final PullRequestService pullRequestService;
+    private final CommitIndex commitIndex;
     private final WebHookConfigurationDao webHookConfigurationDao;
     private final boolean useCanMerge;
 
@@ -70,7 +67,7 @@ public class PullRequestListener implements DisposableBean, InitializingBean
                                HttpClientFactory httpClientFactory,
                                @ComponentImport NavBuilder navBuilder,
                                @ComponentImport ScmService scmService,
-                               @ComponentImport PullRequestService pullRequestService,
+                               @ComponentImport CommitIndex commitIndex,
                                WebHookConfigurationDao webHookConfigurationDao)
     {
         this.applicationPropertiesService = applicationPropertiesService;
@@ -78,7 +75,7 @@ public class PullRequestListener implements DisposableBean, InitializingBean
         this.executorService = executorService;
         this.navBuilder = navBuilder;
         this.scmService = scmService;
-        this.pullRequestService = pullRequestService;
+        this.commitIndex = commitIndex;
         this.webHookConfigurationDao = webHookConfigurationDao;
         useCanMerge = new Version(applicationPropertiesService.getBuildVersion()).compareTo(new Version(4, 10)) < 0;
         httpClient = httpClientFactory.create();
@@ -202,36 +199,13 @@ public class PullRequestListener implements DisposableBean, InitializingBean
             BuildStatusEvent buildStatusEvent = new BuildStatusEvent();
             buildStatusEvent.setCommit(event.getCommitId());
             buildStatusEvent.setStatus(event.getBuildStatus().getState().toString());
-            sendEvents(buildStatusEvent, findRepositoryByCommitId(event.getCommitId()), EventType.BUILD_STATUS);
-        });
-    }
-
-    private Repository findRepositoryByCommitId(String commitId)
-    {
-        int start = 0;
-        Page<PullRequest> requests = null;
-        while (requests == null || requests.getSize() > 0)
-        {
-            requests = pullRequestService.search(new PullRequestSearchRequest.Builder()
-                .state(PullRequestState.OPEN)
-                .build(), new PageRequestImpl(start, 10));
-
-            for(PullRequest pr : requests.getValues())
-            {
-                Page<Commit> commits = pullRequestService.getCommits(pr.getToRef().getRepository().getId(), pr.getId(), new PageRequestImpl(0, 1048576));
-                for (Commit c : commits.getValues())
-                {
-                    if (c.getId().equals(commitId))
-                    {
-                        return pr.getToRef().getRepository();
-                    }
+            IndexedCommit commit = commitIndex.getCommit(event.getCommitId());
+            if (commit != null) {
+                for (Repository repo : commit.getRepositories()){
+                    sendEvents(buildStatusEvent, repo, EventType.BUILD_STATUS);
                 }
             }
-
-            start += 10;
-        }
-
-        return null;
+        });
     }
 
     private static EventType chooseRefsChangedEvent(RepositoryRefsChangedEvent event)
