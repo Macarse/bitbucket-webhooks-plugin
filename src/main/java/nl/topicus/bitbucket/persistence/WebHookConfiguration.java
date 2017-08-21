@@ -112,7 +112,7 @@ public interface WebHookConfiguration extends Entity
 	void setPrDeclined(boolean isPrDeclined);
 
 	@NotNull
-	@Default("true")
+	@Default("false")
 	@Accessor(COLUMN_PR_COMMENTED)
 	boolean isPrCommented();
 
@@ -152,7 +152,7 @@ public interface WebHookConfiguration extends Entity
 	void setTagCreated(boolean isTagCreated);
 
 	@NotNull
-	@Default("true")
+	@Default("false")
 	@Accessor(COLUMN_BUILD_STATUS)
 	boolean isBuildStatus();
 

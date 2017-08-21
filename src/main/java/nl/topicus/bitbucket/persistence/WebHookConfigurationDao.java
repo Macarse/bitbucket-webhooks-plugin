@@ -50,7 +50,7 @@ public class WebHookConfigurationDao {
         return createOrUpdateWebHookConfiguration(rep, id, title, url, committersToIgnore, enabled,
                 false, true, true, true, true,
                 true, true, true, true, true,
-                true, true
+                false, false
         );
     }
 
