@@ -37,6 +37,8 @@ public class BitbucketServerPullRequestEvent
 
     private BitbucketServerRepository repository;
 
+    private String comment;
+
     public BitbucketServerRepositoryOwner getActor()
     {
         return actor;
@@ -65,6 +67,14 @@ public class BitbucketServerPullRequestEvent
     public void setRepository(BitbucketServerRepository repository)
     {
         this.repository = repository;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public String getComment() {
+        return comment;
     }
 
 }

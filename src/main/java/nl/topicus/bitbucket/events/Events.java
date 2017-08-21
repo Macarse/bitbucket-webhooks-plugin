@@ -41,16 +41,10 @@ public final class Events
         pullRequestEvent.setPullrequest(Models.createPullrequest(event.getPullRequest(), appPropSvc));
         pullRequestEvent.setRepository(Models.createRepository(event.getPullRequest().getToRef().getRepository(),
                                                                appPropSvc));
+        if (event instanceof PullRequestCommentEvent)
+        {
+            pullRequestEvent.setComment(((PullRequestCommentEvent) event).getComment().getText());
+        }
         return pullRequestEvent;
-    }
-
-    public static BitbucketServerPullRequestCommentEvent createPullRequestCommmentEvent(PullRequestCommentEvent event,
-                                                                                   ApplicationPropertiesService appPropSvc)
-    {
-        BitbucketServerPullRequestCommentEvent commentEvent = new BitbucketServerPullRequestCommentEvent();
-        commentEvent.setPullrequest(Models.createPullrequest(event.getPullRequest(), appPropSvc));
-        commentEvent.setRepository(Models.createRepository(event.getPullRequest().getToRef().getRepository(), appPropSvc));
-        commentEvent.setComment((event.getComment().getText()));
-        return commentEvent;
     }
 }

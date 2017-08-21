@@ -7,7 +7,6 @@ import com.atlassian.bitbucket.build.BuildStatusSetEvent;
 import com.atlassian.bitbucket.commit.Commit;
 import com.atlassian.bitbucket.event.pull.*;
 import com.atlassian.bitbucket.event.repository.RepositoryDeletionRequestedEvent;
-import com.atlassian.bitbucket.event.repository.RepositoryPushEvent;
 import com.atlassian.bitbucket.event.repository.RepositoryRefsChangedEvent;
 import com.atlassian.bitbucket.event.tag.TagCreatedEvent;
 import com.atlassian.bitbucket.nav.NavBuilder;
@@ -148,7 +147,7 @@ public class PullRequestListener implements DisposableBean, InitializingBean
     @EventListener
     public void commentEvent(PullRequestCommentEvent event) throws IOException
     {
-        sendPullRequestCommentEvent(event, EventType.PULL_REQUEST_COMMENT);
+        sendPullRequestEvent(event, EventType.PULL_REQUEST_COMMENT);
     }
 
     @EventListener
@@ -233,16 +232,6 @@ public class PullRequestListener implements DisposableBean, InitializingBean
         }
 
         return null;
-    }
-
-    private void sendPullRequestCommentEvent(PullRequestCommentEvent event, EventType eventType) throws IOException
-    {
-        BitbucketServerPullRequestCommentEvent commentEvent = Events.createPullRequestCommmentEvent(event,
-            applicationPropertiesService);
-        Repository repository = event.getPullRequest().getToRef().getRepository();
-        String prUrl = navBuilder.repo(repository).pullRequest(event.getPullRequest().getId()).buildAbsolute();
-        commentEvent.getPullrequest().setLink(prUrl);
-        sendEvents(commentEvent, repository, eventType);
     }
 
     private static EventType chooseRefsChangedEvent(RepositoryRefsChangedEvent event)
