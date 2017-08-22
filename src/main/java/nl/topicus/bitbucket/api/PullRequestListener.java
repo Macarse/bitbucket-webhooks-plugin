@@ -23,6 +23,7 @@ import com.atlassian.event.api.EventListener;
 import com.atlassian.event.api.EventPublisher;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import nl.topicus.bitbucket.events.*;
+import nl.topicus.bitbucket.model.Models;
 import nl.topicus.bitbucket.persistence.WebHookConfiguration;
 import nl.topicus.bitbucket.persistence.WebHookConfigurationDao;
 import org.apache.http.Header;
@@ -203,6 +204,7 @@ public class PullRequestListener implements DisposableBean, InitializingBean
             IndexedCommit commit = commitIndex.getCommit(event.getCommitId());
             if (commit != null) {
                 for (Repository repo : commit.getRepositories()){
+                    buildStatusEvent.setRepository(Models.createRepository(repo, applicationPropertiesService));
                     sendEvents(buildStatusEvent, repo, EventType.BUILD_STATUS);
                 }
             }
