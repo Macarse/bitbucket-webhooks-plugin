@@ -199,6 +199,7 @@ public class PullRequestListener implements DisposableBean, InitializingBean
             BuildStatusEvent buildStatusEvent = new BuildStatusEvent();
             buildStatusEvent.setCommit(event.getCommitId());
             buildStatusEvent.setStatus(event.getBuildStatus().getState().toString());
+            buildStatusEvent.setUrl(event.getBuildStatus().getUrl());
             IndexedCommit commit = commitIndex.getCommit(event.getCommitId());
             if (commit != null) {
                 for (Repository repo : commit.getRepositories()){

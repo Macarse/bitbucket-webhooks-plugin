@@ -4,6 +4,7 @@ public class BuildStatusEvent
 {
     private String commit;
     private String status;
+    private String url;
 
     public String getCommit()
     {
@@ -22,5 +23,13 @@ public class BuildStatusEvent
     public void setStatus(String status)
     {
         this.status = status;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }
